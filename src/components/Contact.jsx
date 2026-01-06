@@ -7,7 +7,8 @@ import {
   CheckCircle2,
   Mail,
   User,
-  MessageSquare
+  MessageSquare,
+  Tag,
 } from "lucide-react";
 
 export default function Contact() {
@@ -16,7 +17,7 @@ export default function Contact() {
   const [sourceUrl, setSourceUrl] = useState("");
   const form = useRef();
 
-  // Environment variables (Vite standard)
+  // EmailJS ENV (Vite)
   const SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE;
   const TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE;
   const PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC;
@@ -43,7 +44,7 @@ export default function Contact() {
       setSuccess(true);
       e.target.reset();
 
-      // restore source_url after reset (so hidden input contains current page)
+      // Restore hidden source_url after reset
       setTimeout(() => {
         const input = document.querySelector('input[name="source_url"]');
         if (input) input.value = window.location.href;
@@ -52,39 +53,40 @@ export default function Contact() {
       setTimeout(() => setSuccess(false), 5000);
     } catch (error) {
       console.error("EmailJS Error:", error);
-      alert("Failed to send message. Please check your config or try again later.");
+      alert("Failed to send message. Please try again later.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <section id="contact" className="relative py-24 bg-slate-50 overflow-hidden">
+    <section id="contact" className="relative py-24 bg-slate-50">
       {/* Background Decor */}
       <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-indigo-50 rounded-full blur-3xl -z-10 opacity-50 translate-x-1/2 -translate-y-1/2" />
 
       <div className="container mx-auto px-6">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-start">
           
-          {/* LEFT SIDE: Contact Info & Context */}
+          {/* LEFT SIDE */}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             className="pt-8"
           >
-            <span className="text-indigo-600 font-bold tracking-wider uppercase text-sm">Get in Touch</span>
-            
+            <span className="text-indigo-600 font-bold tracking-wider uppercase text-sm">
+              Get in Touch
+            </span>
+
             <h2 className="mt-3 text-4xl md:text-5xl font-extrabold text-slate-900 leading-tight">
               Ready to start your <br />
               <span className="text-indigo-600">next big project?</span>
             </h2>
 
             <p className="mt-6 text-lg text-slate-600 leading-relaxed">
-              Ready to start your next project? We're here to help you scope, design, and build scalable solutions.
+              We help you scope, design, and build scalable solutions.
             </p>
 
-            {/* Direct Contact Details (EMAIL only) */}
             <div className="mt-10 space-y-6">
               <div className="flex items-start gap-4">
                 <div className="p-3 bg-white rounded-lg border border-slate-100 shadow-sm text-indigo-600">
@@ -93,13 +95,15 @@ export default function Contact() {
                 <div>
                   <h4 className="text-slate-900 font-bold">Email Us</h4>
                   <p className="text-slate-600">info@skyland.com</p>
-                  <p className="text-slate-500 text-sm mt-1">Response time: &lt; 24 hours</p>
+                  <p className="text-slate-500 text-sm mt-1">
+                    Response time: &lt; 24 hours
+                  </p>
                 </div>
               </div>
             </div>
           </motion.div>
 
-          {/* RIGHT SIDE: The Form */}
+          {/* RIGHT SIDE FORM */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -110,9 +114,11 @@ export default function Contact() {
             <form ref={form} onSubmit={handleSubmit} className="space-y-5">
               <input type="hidden" name="source_url" value={sourceUrl} />
 
-              {/* Name Field */}
+              {/* Name */}
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2">Full Name</label>
+                <label className="block text-sm font-semibold text-slate-700 mb-2">
+                  Full Name
+                </label>
                 <div className="relative">
                   <User className="absolute left-4 top-3.5 w-5 h-5 text-slate-400" />
                   <input
@@ -120,14 +126,16 @@ export default function Contact() {
                     name="name"
                     required
                     placeholder="John Doe"
-                    className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all outline-none"
+                    className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none"
                   />
                 </div>
               </div>
 
-              {/* Email Field */}
+              {/* Email */}
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2">Email Address</label>
+                <label className="block text-sm font-semibold text-slate-700 mb-2">
+                  Email Address
+                </label>
                 <div className="relative">
                   <Mail className="absolute left-4 top-3.5 w-5 h-5 text-slate-400" />
                   <input
@@ -135,14 +143,33 @@ export default function Contact() {
                     name="email"
                     required
                     placeholder="john@company.com"
-                    className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all outline-none"
+                    className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none"
                   />
                 </div>
               </div>
 
-              {/* Message Field */}
+              {/* SUBJECT (NEW) */}
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2">Message</label>
+                <label className="block text-sm font-semibold text-slate-700 mb-2">
+                  Subject
+                </label>
+                <div className="relative">
+                  <Tag className="absolute left-4 top-3.5 w-5 h-5 text-slate-400" />
+                  <input
+                    type="text"
+                    name="subject"
+                    required
+                    placeholder="Project inquiry / Partnership / Support"
+                    className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none"
+                  />
+                </div>
+              </div>
+
+              {/* Message */}
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-2">
+                  Message
+                </label>
                 <div className="relative">
                   <MessageSquare className="absolute left-4 top-4 w-5 h-5 text-slate-400" />
                   <textarea
@@ -150,20 +177,21 @@ export default function Contact() {
                     required
                     rows="4"
                     placeholder="Tell us about your project requirements..."
-                    className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all outline-none resize-none"
-                  ></textarea>
+                    className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none resize-none"
+                  />
                 </div>
               </div>
 
-              {/* Submit Button */}
+              {/* Submit */}
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-4 bg-indigo-600 text-white font-bold rounded-xl shadow-lg shadow-indigo-200 hover:bg-indigo-700 hover:shadow-xl active:scale-[0.98] transition-all flex justify-center items-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+                className="w-full py-4 bg-indigo-600 text-white font-bold rounded-xl shadow-lg shadow-indigo-200 hover:bg-indigo-700 hover:shadow-xl active:scale-[0.98] transition-all flex justify-center items-center gap-2 disabled:opacity-70"
               >
                 {loading ? (
                   <>
-                    <Loader2 className="animate-spin w-5 h-5" /> Sending...
+                    <Loader2 className="animate-spin w-5 h-5" />
+                    Sending...
                   </>
                 ) : (
                   <>
@@ -182,19 +210,16 @@ export default function Contact() {
                   exit={{ opacity: 0 }}
                   className="absolute inset-0 bg-white/95 backdrop-blur-sm rounded-3xl flex flex-col items-center justify-center text-center p-8 z-10"
                 >
-                  <motion.div
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    transition={{ type: "spring", stiffness: 200, damping: 10 }}
-                    className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mb-4"
-                  >
+                  <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mb-4">
                     <CheckCircle2 className="w-10 h-10 text-green-600" />
-                  </motion.div>
-                  <h3 className="text-2xl font-bold text-slate-900">Message Sent!</h3>
+                  </div>
+                  <h3 className="text-2xl font-bold text-slate-900">
+                    Message Sent!
+                  </h3>
                   <p className="text-slate-600 mt-2 max-w-xs">
-                    Thanks for reaching out. We'll review your inquiry and get back to you within 24 hours.
+                    We'll get back to you within 24 hours.
                   </p>
-                  <button 
+                  <button
                     onClick={() => setSuccess(false)}
                     className="mt-6 text-sm font-semibold text-indigo-600 hover:text-indigo-700"
                   >
@@ -204,7 +229,6 @@ export default function Contact() {
               )}
             </AnimatePresence>
           </motion.div>
-
         </div>
       </div>
     </section>
