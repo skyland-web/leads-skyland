@@ -8,6 +8,7 @@ import LeadsHero from "./components/LeadsHero";
 import Navbar from "./components/Navbar";
 import TechStack from "./components/TechStack";
 import TrustedBy from "./components/TrustedBy";
+import WhatsAppFloat from "./components/WhatsAppFloat";
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
       <Navbar />
       <LeadsHero />
       <TrustedBy />
+      <WhatsAppFloat/>
       <LeadFeatures />
       <TechStack />
       <CaseStudies />
