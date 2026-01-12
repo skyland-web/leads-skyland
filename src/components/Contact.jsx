@@ -4,7 +4,7 @@ import emailjs from "@emailjs/browser";
 import {
   Send,
   Loader2,
-  CheckCircle2,
+  CheckCircle,
   Mail,
   User,
   MessageSquare,
@@ -17,16 +17,20 @@ export default function Contact() {
   const [sourceUrl, setSourceUrl] = useState("");
   const form = useRef();
 
-  // EmailJS ENV (Vite)
+  // EmailJS ENV variables
   const SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE;
   const TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE;
   const PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC;
 
   useEffect(() => {
+    if (!SERVICE_ID || !TEMPLATE_ID || !PUBLIC_KEY) {
+      console.warn("EmailJS environment variables are missing!");
+    }
+
     if (typeof window !== "undefined") {
       setSourceUrl(window.location.href);
     }
-  }, []);
+  }, [SERVICE_ID, TEMPLATE_ID, PUBLIC_KEY]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -44,13 +48,13 @@ export default function Contact() {
       setSuccess(true);
       e.target.reset();
 
-      // Restore hidden source_url after reset
+      // restore hidden source_url
       setTimeout(() => {
         const input = document.querySelector('input[name="source_url"]');
         if (input) input.value = window.location.href;
       }, 50);
 
-      setTimeout(() => setSuccess(false), 5000);
+      setTimeout(() => setSuccess(false), 8000);
     } catch (error) {
       console.error("EmailJS Error:", error);
       alert("Failed to send message. Please try again later.");
@@ -59,139 +63,142 @@ export default function Contact() {
     }
   };
 
+  // Animation variants
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: { staggerChildren: 0.1 },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 10 },
+    visible: { opacity: 1, y: 0 },
+  };
+
   return (
-    <section id="contact" className="relative py-24 bg-slate-50">
-      {/* Background Decor */}
-      <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-indigo-50 rounded-full blur-3xl -z-10 opacity-50 translate-x-1/2 -translate-y-1/2" />
+    <section id="contact" className="relative py-4 px-6 overflow-hidden">
+      {/* Background */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-accent/5 rounded-full blur-3xl -z-10" />
 
-      <div className="container mx-auto px-6">
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-start">
-          
-          {/* LEFT SIDE */}
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            className="pt-8"
-          >
-            <span className="text-indigo-600 font-bold tracking-wider uppercase text-sm">
-              Get in Touch
-            </span>
+      <div className="max-w-4xl mx-auto">
+        {/* Heading */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="text-center mb-12"
+        >
+          <h2 className="text-4xl md:text-5xl font-extrabold text-slate-900">
+            Get in touch
+          </h2>
+          <p className="mt-4 text-slate-600 text-lg max-w-xl mx-auto">
+            Have a project in mind or want to discuss a partnership?
+            Send us a message and we’ll get back to you within 24 hours.
+          </p>
+        </motion.div>
 
-            <h2 className="mt-3 text-4xl md:text-5xl font-extrabold text-slate-900 leading-tight">
-              Ready to start your <br />
-              <span className="text-indigo-600">next big project?</span>
-            </h2>
+        {/* Form Card */}
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          className="bg-white p-8 md:p-10 rounded-3xl shadow-xl border border-slate-100"
+        >
+          <form ref={form} onSubmit={handleSubmit} className="space-y-6">
+            {/* Hidden source url */}
+            <input type="hidden" name="source_url" value={sourceUrl} />
 
-            <p className="mt-6 text-lg text-slate-600 leading-relaxed">
-              We help you scope, design, and build scalable solutions.
-            </p>
-
-            <div className="mt-10 space-y-6">
-              <div className="flex items-start gap-4">
-                <div className="p-3 bg-white rounded-lg border border-slate-100 shadow-sm text-indigo-600">
-                  <Mail className="w-6 h-6" />
-                </div>
-                <div>
-                  <h4 className="text-slate-900 font-bold">Email Us</h4>
-                  <p className="text-slate-600">info@skyland.com</p>
-                  <p className="text-slate-500 text-sm mt-1">
-                    Response time: &lt; 24 hours
-                  </p>
-                </div>
-              </div>
-            </div>
-          </motion.div>
-
-          {/* RIGHT SIDE FORM */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.2 }}
-            className="bg-white p-8 md:p-10 rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-100 relative"
-          >
-            <form ref={form} onSubmit={handleSubmit} className="space-y-5">
-              <input type="hidden" name="source_url" value={sourceUrl} />
-
+            <div className="grid md:grid-cols-2 gap-6">
               {/* Name */}
-              <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2">
-                  Full Name
+              <motion.div variants={itemVariants}>
+                <label className="block text-sm font-medium text-slate-700 mb-2">
+                  Your Name
                 </label>
                 <div className="relative">
-                  <User className="absolute left-4 top-3.5 w-5 h-5 text-slate-400" />
+                  <span className="absolute left-4 top-3.5 text-slate-400">
+                    <User className="w-5 h-5" />
+                  </span>
                   <input
                     type="text"
                     name="name"
                     required
                     placeholder="John Doe"
-                    className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none"
+                    className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-accent focus:ring-4 focus:ring-accent/10 outline-none"
                   />
                 </div>
-              </div>
+              </motion.div>
 
               {/* Email */}
-              <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2">
+              <motion.div variants={itemVariants}>
+                <label className="block text-sm font-medium text-slate-700 mb-2">
                   Email Address
                 </label>
                 <div className="relative">
-                  <Mail className="absolute left-4 top-3.5 w-5 h-5 text-slate-400" />
+                  <span className="absolute left-4 top-3.5 text-slate-400">
+                    <Mail className="w-5 h-5" />
+                  </span>
                   <input
                     type="email"
                     name="email"
                     required
-                    placeholder="john@company.com"
-                    className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none"
+                    placeholder="john@example.com"
+                    className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-accent focus:ring-4 focus:ring-accent/10 outline-none"
                   />
                 </div>
-              </div>
+              </motion.div>
+            </div>
 
-              {/* SUBJECT (NEW) */}
-              <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2">
-                  Subject
-                </label>
-                <div className="relative">
-                  <Tag className="absolute left-4 top-3.5 w-5 h-5 text-slate-400" />
-                  <input
-                    type="text"
-                    name="subject"
-                    required
-                    placeholder="Project inquiry / Partnership / Support"
-                    className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none"
-                  />
-                </div>
+            {/* Subject */}
+            <motion.div variants={itemVariants}>
+              <label className="block text-sm font-medium text-slate-700 mb-2">
+                Subject
+              </label>
+              <div className="relative">
+                <span className="absolute left-4 top-3.5 text-slate-400">
+                  <Tag className="w-5 h-5" />
+                </span>
+                <input
+                  type="text"
+                  name="subject"
+                  required
+                  placeholder="Project inquiry / Partnership / Support"
+                  className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-accent focus:ring-4 focus:ring-accent/10 outline-none"
+                />
               </div>
+            </motion.div>
 
-              {/* Message */}
-              <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2">
-                  Message
-                </label>
-                <div className="relative">
-                  <MessageSquare className="absolute left-4 top-4 w-5 h-5 text-slate-400" />
-                  <textarea
-                    name="message"
-                    required
-                    rows="4"
-                    placeholder="Tell us about your project requirements..."
-                    className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none resize-none"
-                  />
-                </div>
+            {/* Message */}
+            <motion.div variants={itemVariants}>
+              <label className="block text-sm font-medium text-slate-700 mb-2">
+                Message
+              </label>
+              <div className="relative">
+                <span className="absolute left-4 top-4 text-slate-400">
+                  <MessageSquare className="w-5 h-5" />
+                </span>
+                <textarea
+                  name="message"
+                  rows="4"
+                  required
+                  placeholder="Tell us about your project..."
+                  className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:border-accent focus:ring-4 focus:ring-accent/10 outline-none resize-none"
+                />
               </div>
+            </motion.div>
 
-              {/* Submit */}
+            {/* Submit */}
+            <motion.div variants={itemVariants}>
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-4 bg-indigo-600 text-white font-bold rounded-xl shadow-lg shadow-indigo-200 hover:bg-indigo-700 hover:shadow-xl active:scale-[0.98] transition-all flex justify-center items-center gap-2 disabled:opacity-70"
+                className="w-full py-4 bg-accent text-white font-bold rounded-xl shadow-lg shadow-accent/25 hover:shadow-accent/40 transition-all flex items-center justify-center gap-2 disabled:opacity-70"
               >
                 {loading ? (
                   <>
-                    <Loader2 className="animate-spin w-5 h-5" />
-                    Sending...
+                    <Loader2 className="animate-spin" /> Sending...
                   </>
                 ) : (
                   <>
@@ -199,37 +206,27 @@ export default function Contact() {
                   </>
                 )}
               </button>
-            </form>
+            </motion.div>
+          </form>
 
-            {/* Success Overlay */}
-            <AnimatePresence>
-              {success && (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0 }}
-                  className="absolute inset-0 bg-white/95 backdrop-blur-sm rounded-3xl flex flex-col items-center justify-center text-center p-8 z-10"
-                >
-                  <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mb-4">
-                    <CheckCircle2 className="w-10 h-10 text-green-600" />
-                  </div>
-                  <h3 className="text-2xl font-bold text-slate-900">
-                    Message Sent!
-                  </h3>
-                  <p className="text-slate-600 mt-2 max-w-xs">
-                    We'll get back to you within 24 hours.
-                  </p>
-                  <button
-                    onClick={() => setSuccess(false)}
-                    className="mt-6 text-sm font-semibold text-indigo-600 hover:text-indigo-700"
-                  >
-                    Send another message
-                  </button>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </motion.div>
-        </div>
+          {/* Success Message */}
+          <AnimatePresence>
+            {success && (
+              <motion.div
+                initial={{ opacity: 0, height: 0, marginTop: 0 }}
+                animate={{ opacity: 1, height: "auto", marginTop: 20 }}
+                exit={{ opacity: 0, height: 0, marginTop: 0 }}
+                className="bg-green-50 border border-green-100 text-green-700 px-6 py-4 rounded-xl flex gap-3"
+              >
+                <CheckCircle />
+                <div>
+                  <p className="font-semibold">Message sent successfully!</p>
+                  <p className="text-sm">We’ll get back to you shortly.</p>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </motion.div>
       </div>
     </section>
   );

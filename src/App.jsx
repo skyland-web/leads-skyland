@@ -16,12 +16,12 @@ function App() {
       <Navbar />
       <LeadsHero />
       <TrustedBy />
-      <WhatsAppFloat/>
+      <WhatsAppFloat />
       <LeadFeatures />
       <TechStack />
       <CaseStudies />
-      <FAQ />
       <Contact />
+      <FAQ />
       <Footer />
     </div>
   );
